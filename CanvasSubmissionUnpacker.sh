@@ -44,8 +44,10 @@ function setGlobalVariables() {
 
 function printUsage() {
     printf "USAGE: \nbash CanvasSubmissionUnPacker.sh\nOptions:"
-    printf "\n\t -a NameOfAssingment (Name of assingment associated with submission)"
     printf "\n\t -u (Displayes usage of CanvasSubmissionUnpacker bash shell script)"
+    printf "\n\t -i (Provides interactive mode, interacts with user on command line)"
+    printf "\n\t -s PathToZip.zip (Path to compressed zip folder containing submissions)"
+    printf "\n\t -a NameOfAssingment (Name of assingment associated with submission)"
     printf "\n"
 }
 
