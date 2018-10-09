@@ -38,7 +38,7 @@ function setGlobalVariables() {
 
     if [[ -z "$ASSINGMENTNAME" ]]
     then
-        ASSINGMENTNAME="DEFAULT"
+        ASSINGMENTNAME="Submissions"
     fi
 }
 
@@ -87,7 +87,7 @@ function setCompressedZipSubmissions() {
         then
             printf "\nGreat! I see your zip compressed folder.\n"
         else
-            printf "\nCan't see compresssed zip folder. Try again: bash CanvasSubmissionUnpacker -s \"\\path\\to\\zip.zip\""
+            printf "\nCan't see compresssed zip folder. Try again: bash CanvasSubmissionUnpacker -s \"/\path\/to\/zip.zip\""
             cleanUp 1
         fi
     else  # Grab the location of the submissions compressed zip folder from the user.
@@ -110,11 +110,11 @@ function setCompressedZipSubmissions() {
 }
 
 function makeAssingmentDirectory() {
-    if [[ "$ASSINGMENTNAME" != "Default" ]]
+    if [ "$ASSINGMENTNAME" != "Submissions" ]
     then 
         if [ -d "./$ASSINGMENTNAME" ]
         then
-            printf "\nThere is already a directory with this name in this folder. I will write into this directory.\n"
+            printf "There is already a directory \"$ASSINGMENTNAME\" in this folder. I will write into this directory.\n"
         else
             mkdir "./$ASSINGMENTNAME"
             printf "\nCreated directory: $ASSINGMENTNAME.\n"
@@ -125,7 +125,7 @@ function makeAssingmentDirectory() {
 
         if [ -d "./$ASSINGMENTNAME" ]
         then
-            printf "\nThere is already a directory with this name in this folder. I will write into this directory.\n"
+            printf "There is already a directory with this name in this folder. I will write into this directory.\n"
         else
             mkdir "./$ASSINGMENTNAME"
             printf "\nCreated directory: $ASSINGMENTNAME.\n"
@@ -146,23 +146,29 @@ printf "This project is available at https://github.com/jacksonporter/canvassubm
 # Process command line arguments.
 if [ $# -eq 0 ]
 then 
-    printf "\nWill run in interactive mode."
+    printf "\n***Will run in interactive mode.***\n\n"
     setGlobalVariables
 else
+    count=0
     while [ $# -ne 0 ]
     do
-        num1=$1
-        printf "\nnum1 is: $num1\n"
+        if [ $count -eq 0 ]
+        then
+            count=$(($count + 1))
+            num1=$1
+        else
+            shift 1
+            num1=$1
+        fi
+        
 
         if [[ $num1 == -* ]]
         then
             num1="${num1#?}"
-            printf "\nnum1 now is: $num1\n"
 
             while [[ ! -z "$num1" ]]
             do
                 firstLetter="$(echo $num1 | head -c 1)"
-                printf "firstLetter is: $firstLetter\n"
                 if [[ "$firstLetter" == "u" ]]
                 then
                     printUsage
@@ -184,24 +190,24 @@ else
                     shift 1
                     COMPRESSEDSUBMISSIONS="$1"
                     printf "Set compressed zip folder as: $COMPRESSEDSUBMISSIONS\n"
-                    shift 1
+                    setGlobalVariables                    
                 elif [[ "$firstLetter" == "a" ]]
                 then
                     shift 1
                     ASSINGMENTNAME="$1"
                     printf "Set assingment name as: $ASSINGMENTNAME\n"
-                    shift 1
+                    setGlobalVariables
                 else
                     printf "\nInvalid argument or missing value. Run bash CanvasSubmissionUnpacker.sh -u for usage."
                     cleanUp 1
                 fi
 
                 num1=${num1#?}
-                printf "\nnum1 reset in condition is: $num1\n"
             done
         elif [[ -z "$num1" ]]
         then
-            printf "\nNo more args!\n"
+            printf ""
+            #printf "\nNo more args!\n"
         else
             printf "\nInvalid argument or missing value. Run bash CanvasSubmissionUnpacker.sh -u for usage."
             cleanUp 1
@@ -212,5 +218,7 @@ fi
 # Start running tasks
 setCompressedZipSubmissions #set the location of submission compressed zip folder
 makeAssingmentDirectory #create a directory for this assingment and more me to work in
+
+#makeStudentDirectories #creates subdirectories with student names based on file names
 
 
