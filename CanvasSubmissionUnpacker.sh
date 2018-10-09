@@ -66,9 +66,11 @@ function cleanUp() {
             printf "Since an error occured, would you like to delete the working directory? (y/N): "
             read input #Get user input to delete working directory
 
-            if [ input == "Y" ] || [ input == "y" ]
+            echo "INPUT: $input"
+
+            if [[ "$input" == "Y" ]] || [[ "$input" == "y" ]]
             then 
-                printf "Deleting all folders/files in created directory and deleting directory, $ASSINGMENTNAME."
+                printf "Deleting all folders/files in created directory and deleting directory: $ASSINGMENTNAME.\n"
                 rm -rf "./$ASSINGMENTNAME"
             else
                 printf "The $ASSINGMENTNAME directory was left behind.\n"
@@ -131,6 +133,49 @@ function makeAssingmentDirectory() {
             printf "\nCreated directory: $ASSINGMENTNAME.\n"
         fi
     fi
+}
+
+function unzipSubmissions() {
+    mkdir "$ASSINGMENTNAME/Extracted_Submissions"
+    unzipLocation="$(which unzip)"
+
+    if [ -z "$unzipLocation" ]
+    then
+        printf "Unzip is not installed on your system! You'll need to install it before this script can run.\n"
+        printf "Would you like me to install it (Debain/Ubuntu/Other APT using systems only)? (Y/n): "
+        read input
+
+        if [[ "$input" == "N" ]] || [[ "$input" == "n" ]]
+        then 
+            printf "\nRun this script again once unzip is installed.\n"
+            cleanUp 1
+        fi
+
+        printf "If you are prompted for a password, please type it below (if you're not and administrator this won't work):\n"
+        sudo apt update
+
+        if [ $? -ne 0 ]
+        then 
+            printf "Couldn't update software sources. Are you connected to the internet?2\n"
+            cleanUp 1
+        fi
+
+        sudo apt install unzip --yes
+
+        if [ $? -ne 0 ]
+        then 
+            printf "\nInstallation failed. Are you connected to the internet?\n"
+            cleanUp 1
+        fi
+    fi
+
+    unzip $COMPRESSEDSUBMISSIONS -d "$ASSINGMENTNAME/Extracted_Submissions"
+    if [ $? -ne 0 ]
+    then 
+        printf "\nCouldn't extract your zip file. It may be corrupted.\n"
+        cleanUp 1
+    fi
+
 }
 
 
@@ -218,7 +263,7 @@ fi
 # Start running tasks
 setCompressedZipSubmissions #set the location of submission compressed zip folder
 makeAssingmentDirectory #create a directory for this assingment and more me to work in
-
+unzipSubmissions #unzip the submissions to a subdirectory inside the assingment folder.
 #makeStudentDirectories #creates subdirectories with student names based on file names
 
 
