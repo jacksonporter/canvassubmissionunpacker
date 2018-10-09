@@ -28,7 +28,7 @@
 
 # This is a project based at: https://github.com/jacksonporter/canvassubmissionunpacker
 
-#functions:
+# Functions:
 
 
 
@@ -37,6 +37,26 @@
 
 
 
-#main:
-printf "You are running the Canvas Submission Unpacker Bash Script."
-printf "This project is available at https://github.com/jacksonporter/canvassubmissionunpacker\n"
+# Main:
+
+# Print welcome messages.
+printf "You are running the Canvas Submission Unpacker Bash Script.\n"
+printf "This project is available at https://github.com/jacksonporter/canvassubmissionunpacker\n\n"
+
+# Start running tasks in an interactive way with the user. 
+printf "Please type in the name of the ZIP compressed folder with the submissions (don't forget the .zip at the end): "
+read COMPRESSEDSUBMISSIONS
+
+# Grab the locatin of the submissions compressed zip folder from the user.
+if [ -f "./$COMPRESSEDSUBMISSIONS" ]
+then
+    printf "\nGreat! I see your zip compressed folder is in the same directory as me :)\n"
+else
+    while [ ! -f "$COMPRESSEDSUBMISSIONS" ]
+    do
+        printf "\nLooks like I can't see that file. Please type the full path of the file (Press CTRL+C to quit): "
+        read COMPRESSEDSUBMISSIONS
+    done
+    printf "\nGreat! I see your zip commpressed folder!\n"
+fi
+
