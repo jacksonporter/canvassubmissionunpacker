@@ -136,7 +136,7 @@ function makeAssingmentDirectory() {
 }
 
 function unzipSubmissions() {
-    mkdir "$ASSINGMENTNAME/Extracted_Submissions"
+    mkdir "$ASSINGMENTNAME/ExtractedSubmissions"
     unzipLocation="$(which unzip)"
 
     if [ -z "$unzipLocation" ]
@@ -169,13 +169,44 @@ function unzipSubmissions() {
         fi
     fi
 
-    unzip $COMPRESSEDSUBMISSIONS -d "$ASSINGMENTNAME/Extracted_Submissions"
+    unzip $COMPRESSEDSUBMISSIONS -d "$ASSINGMENTNAME/ExtractedSubmissions"
     if [ $? -ne 0 ]
     then 
         printf "\nCouldn't extract your zip file. It may be corrupted.\n"
         cleanUp 1
     fi
+}
 
+#Based on the beginnings of file names, create directories of students to put indivudal submisisons in.
+function makeStudentDirectoriesRenameFilesUnzip(){
+    for FILE in ./$ASSINGMENTNAME/ExtractedSubmissions/*.*
+    do
+        initialFileName="$(echo "$FILE" | awk '{split($0,a,"/"); print a[4]}')"
+        studentName="$(echo "$initialFileName" | awk '{split($0,a,"_"); print a[1]}')"
+
+
+        if [ ! -d "./$ASSINGMENTNAME/$studentName" ]
+        then
+            printf "New Student Directory: $studentName\n" 
+            mkdir "./$ASSINGMENTNAME/$studentName"
+        fi
+
+        #Generate correct filename
+        fileName="$(echo "$initialFileName" | awk '{split($0,a,"_"); print a[4]}')"
+        printf "Renaming $initialFileName to $fileName\n"
+
+        mv "$FILE" "./$ASSINGMENTNAME/$studentName/$fileName"
+
+        fileExt="$(echo "$fileName" | awk '{n=split($0,a,"."); print a[n]}')" 
+        #printf "FILEXT: $fileExt\n"
+
+        if [[ "$fileExt" == "zip" ]] || [[ "$fileExt" == "ZIP" ]]
+        then
+            unzip "./$ASSINGMENTNAME/$studentName/$fileName" -d "./$ASSINGMENTNAME/$studentName"
+        fi     
+
+        printf "\n"
+    done
 }
 
 
@@ -264,6 +295,6 @@ fi
 setCompressedZipSubmissions #set the location of submission compressed zip folder
 makeAssingmentDirectory #create a directory for this assingment and more me to work in
 unzipSubmissions #unzip the submissions to a subdirectory inside the assingment folder.
-#makeStudentDirectories #creates subdirectories with student names based on file names
+makeStudentDirectoriesRenameFilesUnzip #creates subdirectories with student names based on file names
 
 
