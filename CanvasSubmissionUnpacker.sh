@@ -18,15 +18,13 @@
 # This script takes a compressed zip folder of submissions from Canvas by Instructure
 # unzips it, creates a new directory, creates a new folder for each student 
 # submission, renames the files to have the original name (part of the problem with
-# downloading all submissions from a single assingment in Canvas).
+# downloading all submissions from a single assignment in Canvas).
 
 # There are no guarantees from using this script. This is a Bash shell script, which uses
 # various Linux/Unix programs to complete the above described tasks. I do not take 
 # responsibility for the usage and output of this software. USE AT YOUR OWN RISK!
-# This script/program is lisened by the MIT License. Please see the GitHub repository
-# below and open the License file for more information.
-
-# This is a project based at: https://github.com/jacksonporter/canvassubmissionunpacker
+# This script/program is licensed by the MIT License. Please see the GitHub repository
+# listed above and open the License file for more information.
 
 # Functions:
 
@@ -36,9 +34,9 @@ function setGlobalVariables() {
         COMPRESSEDSUBMISSIONS=""
     fi
 
-    if [[ -z "$ASSINGMENTNAME" ]]
+    if [[ -z "$assignmentNAME" ]]
     then
-        ASSINGMENTNAME="Submissions"
+        assignmentNAME="Submissions"
     fi
 }
 
@@ -47,7 +45,7 @@ function printUsage() {
     printf "\n\t -u (Displayes usage of CanvasSubmissionUnpacker bash shell script)"
     printf "\n\t -i (Provides interactive mode, interacts with user on command line)"
     printf "\n\t -s PathToZip.zip (Path to compressed zip folder containing submissions)"
-    printf "\n\t -a NameOfAssingment (Name of assingment associated with submission)"
+    printf "\n\t -a NameOfassignment (Name of assignment associated with submission)"
     printf "\n"
 }
 
@@ -63,7 +61,7 @@ function cleanUp() {
 
     if [ $1 -eq 1 ]
     then
-        if [ -d "./$ASSINGMENTNAME" ] # Did I make a directory to work in?
+        if [ -d "./$assignmentNAME" ] # Did I make a directory to work in?
         then 
             printf "Since an error occured, would you like to delete the working directory? (y/N): "
             read input #Get user input to delete working directory
@@ -72,10 +70,10 @@ function cleanUp() {
 
             if [[ "$input" == "Y" ]] || [[ "$input" == "y" ]]
             then 
-                printf "Deleting all folders/files in created directory and deleting directory: $ASSINGMENTNAME.\n"
-                rm -rf "./$ASSINGMENTNAME"
+                printf "Deleting all folders/files in created directory and deleting directory: $assignmentNAME.\n"
+                rm -rf "./$assignmentNAME"
             else
-                printf "The $ASSINGMENTNAME directory was left behind.\n"
+                printf "The $assignmentNAME directory was left behind.\n"
             fi
         fi
     fi
@@ -83,7 +81,7 @@ function cleanUp() {
     exit $1
 }
 
-# Set location of compressed zip folder containing assingment submissions
+# Set location of compressed zip folder containing assignment submissions
 function setCompressedZipSubmissions() {
     if [[ "$COMPRESSEDSUBMISSIONS" != "" ]]
     then 
@@ -113,32 +111,32 @@ function setCompressedZipSubmissions() {
     fi
 }
 
-function makeAssingmentDirectory() {
-    if [ "$ASSINGMENTNAME" != "Submissions" ]
+function makeassignmentDirectory() {
+    if [ "$assignmentNAME" != "Submissions" ]
     then 
-        if [ -d "./$ASSINGMENTNAME" ]
+        if [ -d "./$assignmentNAME" ]
         then
-            printf "There is already a directory \"$ASSINGMENTNAME\" in this folder. I will write into this directory.\n"
+            printf "There is already a directory \"$assignmentNAME\" in this folder. I will write into this directory.\n"
         else
-            mkdir "./$ASSINGMENTNAME"
-            printf "\nCreated directory: $ASSINGMENTNAME.\n"
+            mkdir "./$assignmentNAME"
+            printf "\nCreated directory: $assignmentNAME.\n"
         fi
     else  # Grab the location of the submissions compressed zip folder from the user.
-        printf "Please type in the name of the assingment that goes with the submissions (Please, no spaces): "
-        read ASSINGMENTNAME
+        printf "Please type in the name of the assignment that goes with the submissions (Please, no spaces): "
+        read assignmentNAME
 
-        if [ -d "./$ASSINGMENTNAME" ]
+        if [ -d "./$assignmentNAME" ]
         then
             printf "There is already a directory with this name in this folder. I will write into this directory.\n"
         else
-            mkdir "./$ASSINGMENTNAME"
-            printf "\nCreated directory: $ASSINGMENTNAME.\n"
+            mkdir "./$assignmentNAME"
+            printf "\nCreated directory: $assignmentNAME.\n"
         fi
     fi
 }
 
 function unzipSubmissions() {
-    mkdir "$ASSINGMENTNAME/ExtractedSubmissions"
+    mkdir "$assignmentNAME/ExtractedSubmissions"
     unzipLocation="$(which unzip)"
 
     if [ -z "$unzipLocation" ]
@@ -171,7 +169,7 @@ function unzipSubmissions() {
         fi
     fi
 
-    unzip $COMPRESSEDSUBMISSIONS -d "$ASSINGMENTNAME/ExtractedSubmissions"
+    unzip $COMPRESSEDSUBMISSIONS -d "$assignmentNAME/ExtractedSubmissions"
     if [ $? -ne 0 ]
     then 
         printf "\nCouldn't extract your zip file. It may be corrupted.\n"
@@ -181,30 +179,30 @@ function unzipSubmissions() {
 
 #Based on the beginnings of file names, create directories of students to put indivudal submisisons in.
 function makeStudentDirectoriesRenameFilesUnzip(){
-    for FILE in ./$ASSINGMENTNAME/ExtractedSubmissions/*.*
+    for FILE in ./$assignmentNAME/ExtractedSubmissions/*.*
     do
         initialFileName="$(echo "$FILE" | awk '{split($0,a,"/"); print a[4]}')"
         studentName="$(echo "$initialFileName" | awk '{split($0,a,"_"); print a[1]}')"
 
 
-        if [ ! -d "./$ASSINGMENTNAME/$studentName" ]
+        if [ ! -d "./$assignmentNAME/$studentName" ]
         then
             printf "New Student Directory: $studentName\n" 
-            mkdir "./$ASSINGMENTNAME/$studentName"
+            mkdir "./$assignmentNAME/$studentName"
         fi
 
         #Generate correct filename
         fileName="$(echo "$initialFileName" | awk '{split($0,a,"_"); print a[4]}')"
         printf "Renaming $initialFileName to $fileName\n"
 
-        mv "$FILE" "./$ASSINGMENTNAME/$studentName/$fileName"
+        mv "$FILE" "./$assignmentNAME/$studentName/$fileName"
 
         fileExt="$(echo "$fileName" | awk '{n=split($0,a,"."); print a[n]}')" 
         #printf "FILEXT: $fileExt\n"
 
         if [[ "$fileExt" == "zip" ]] || [[ "$fileExt" == "ZIP" ]]
         then
-            unzip "./$ASSINGMENTNAME/$studentName/$fileName" -d "./$ASSINGMENTNAME/$studentName"
+            unzip "./$assignmentNAME/$studentName/$fileName" -d "./$assignmentNAME/$studentName"
         fi     
 
         printf "\n"
@@ -272,8 +270,8 @@ else
                 elif [[ "$firstLetter" == "a" ]]
                 then
                     shift 1
-                    ASSINGMENTNAME="$1"
-                    printf "Set assingment name as: $ASSINGMENTNAME\n"
+                    assignmentNAME="$1"
+                    printf "Set assignment name as: $assignmentNAME\n"
                     setGlobalVariables
                 else
                     printf "\nInvalid argument or missing value. Run bash CanvasSubmissionUnpacker.sh -u for usage."
@@ -295,8 +293,8 @@ fi
 
 # Start running tasks
 setCompressedZipSubmissions #set the location of submission compressed zip folder
-makeAssingmentDirectory #create a directory for this assingment and more me to work in
-unzipSubmissions #unzip the submissions to a subdirectory inside the assingment folder.
+makeassignmentDirectory #create a directory for this assignment and more me to work in
+unzipSubmissions #unzip the submissions to a subdirectory inside the assignment folder.
 makeStudentDirectoriesRenameFilesUnzip #creates subdirectories with student names based on file names
 
 
