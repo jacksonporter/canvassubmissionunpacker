@@ -28,9 +28,51 @@
 
 # This is a project based at: https://github.com/jacksonporter/canvassubmissionunpacker
 
+# Global Variables
+createdDir="DefaultSubmissionFolder"
+
 # Functions:
 
+function cleanUpCtrlC() {
+    clear
+    printf "Thank you for using Canvas Submission Unpacker. Program closed by (CTRL + C)\n"
+    exit 1
+}
 
+# Cleans up the program by printing thank you message and an additional message if needed 
+# and clears the console.
+function cleanUp() {
+    clear # clear the console
+    printf "Thank you for using Canvas Submission Unpacker. " # print thank you
+
+    if [ ! -z $1 ] #if an argument is provided, print it.
+    then
+        printf "Message: $1\n"
+        shift
+    fi
+
+    if [ $1 -eq 1 ]
+    then
+        printf "Since an error occured, would you like to delete my progress? (y/N): "
+        read input
+
+        if [ input == "Y" ] || [ input == "y" ]
+        then 
+            if [ -d "./$createdDir" ]
+            then 
+                printf "Deleting all folders/files in created directory and deleting directory, $createdDir."
+                rm -rf "./$createdDir"
+            fi
+        else
+            if [ -d "./$createdDir" ]
+            then 
+                printf "The $createdDir directory was left behind.\n"
+            fi
+        fi
+    fi
+
+    exit $1
+}
 
 
 
@@ -38,6 +80,9 @@
 
 
 # Main:
+
+# Trap SIGINT (Ctrl + C) if pressed.
+trap cleanUpCtrlC SIGINT
 
 # Print welcome messages.
 printf "You are running the Canvas Submission Unpacker Bash Script.\n"
@@ -60,3 +105,6 @@ else
     printf "\nGreat! I see your zip commpressed folder!\n"
 fi
 
+
+#
+clear
