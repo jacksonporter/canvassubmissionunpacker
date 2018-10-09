@@ -45,7 +45,7 @@ function cleanUp() {
     clear # clear the console
     printf "Thank you for using Canvas Submission Unpacker. " # print thank you
 
-    if [ ! -z $1 ] #if an argument is provided, print it.
+    if [[ "$1" != "" ]] && [[ "$1" != "0" ]] && [[ "$1" != "1" ]] #if an argument is provided, print it.
     then
         printf "Message: $1\n"
         shift
@@ -53,19 +53,16 @@ function cleanUp() {
 
     if [ $1 -eq 1 ]
     then
-        printf "Since an error occured, would you like to delete my progress? (y/N): "
-        read input
-
-        if [ input == "Y" ] || [ input == "y" ]
+        if [ -d "./$createdDir" ] # Did I make a directory to work in?
         then 
-            if [ -d "./$createdDir" ]
+            printf "Since an error occured, would you like to delete my progress? (y/N): "
+            read input #Get user input to delete working directory
+
+            if [ input == "Y" ] || [ input == "y" ]
             then 
                 printf "Deleting all folders/files in created directory and deleting directory, $createdDir."
                 rm -rf "./$createdDir"
-            fi
-        else
-            if [ -d "./$createdDir" ]
-            then 
+            else
                 printf "The $createdDir directory was left behind.\n"
             fi
         fi
@@ -106,5 +103,5 @@ else
 fi
 
 
-#
-clear
+# Test running cleanUp with error
+cleanUp "Test Error" 1
