@@ -39,4 +39,4 @@ If you run the script with no command line options, it will automatically run in
 
 **Notes:**
 * If you use the -u option with any other options, the program will eventually stop and show usage.
-* If you use the -i option with any other options, the program will run as interactive as it can based on if you provided the path to the compressed zip folder and homework assingment name.
+* If you use the -i option with any other options, the program will run as interactive as it can based on if you provided the path to the compressed zip folder and homework assignment name.
