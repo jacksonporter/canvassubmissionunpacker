@@ -26,7 +26,7 @@ OR
 * ./CanvasSubmissionUnpacker.sh  - if you mark the script as executable by running:
 	* chmod 554 CanvasSubmissionUnpacker.sh
 
-If you run the script with no command line options, it will automatically run in interactive mode. Here are examples of other options you can use:
+If you run the script without command line options, it will automatically run in interactive mode. Here are examples of other options you can use:
 
 * Display Usage:
 	*  bash CanvasSubmissionUnpacker.sh -u
